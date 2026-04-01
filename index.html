@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroIQ Test 🧠</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at top, #0f0f0f, #000);
+  color: white;
+  overflow: hidden;
+}
+
+/* container */
+.container {
+  max-width: 420px;
+  margin: auto;
+  margin-top: 40px;
+  padding: 25px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 40px rgba(0,255,255,0.1);
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+/* neon title */
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px;
+  background: linear-gradient(90deg, #00f2fe, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #00f2fe, #ff00ff);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.hidden { display: none; }
+
+/* progress */
+.progress {
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, cyan, magenta);
+}
+
+/* glitch text */
+.glitch {
+  animation: glitch 0.3s infinite;
+}
+
+@keyframes glitch {
+  0% {transform: translate(0);}
+  20% {transform: translate(-2px,2px);}
+  40% {transform: translate(2px,-2px);}
+  60% {transform: translate(-1px,1px);}
+  80% {transform: translate(1px,-1px);}
+}
+
+/* leaderboard */
+.leaderboard {
+  text-align: left;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+/* animation */
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+.small {
+  opacity: 0.6;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- START -->
+<div id="start">
+  <h1>🧠 NeuroIQ Scanner</h1>
+  <p>AI-powered intelligence analysis system</p>
+  <button onclick="startTest()">Start Scan 🚀</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="hidden">
+  <h2 id="q"></h2>
+  <div id="options"></div>
+</div>
+
+<!-- CAMERA SCAN -->
+<div id="camera" class="hidden">
+  <h2>📸 Scanning Face...</h2>
+  <p class="small">Do not move</p>
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="hidden">
+  <h2 id="loadingText">Initializing AI...</h2>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+  <h2 id="resText"></h2>
+  <div class="leaderboard" id="leaderboard"></div>
+  <button onclick="location.reload()">Try Again 🔁</button>
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+  {q:"2, 6, 12, 20, ?", a:["30","28","26","32"]},
+  {q:"Find odd one", a:["Dog","Cat","Car","Lion"]},
+  {q:"5x=25, x=?", a:["3","5","7","10"]},
+  {q:"Next: A, C, F, J, ?", a:["O","M","P","N"]}
+];
+
+let i=0;
+
+function startTest(){
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  showQ();
+}
+
+function showQ(){
+  let q=questions[i];
+  document.getElementById("q").innerText=q.q;
+  let op=document.getElementById("options");
+  op.innerHTML="";
+  q.a.forEach(ans=>{
+    let b=document.createElement("button");
+    b.innerText=ans;
+    b.onclick=next;
+    op.appendChild(b);
+  });
+}
+
+function next(){
+  i++;
+  if(i<questions.length) showQ();
+  else fakeCamera();
+}
+
+/* fake camera */
+function fakeCamera(){
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("camera").classList.remove("hidden");
+
+  setTimeout(()=>{
+    startLoading();
+  },2000);
+}
+
+/* loading */
+function startLoading(){
+  document.getElementById("camera").classList.add("hidden");
+  document.getElementById("loading").classList.remove("hidden");
+
+  let bar=document.getElementById("bar");
+  let text=document.getElementById("loadingText");
+
+  let msgs=[
+    "Scanning brainwaves...",
+    "Detecting intelligence patterns...",
+    "Comparing with 8 billion humans...",
+    "Generating personality report...",
+    "Finalizing score..."
+  ];
+
+  let progress=0;
+  let index=0;
+
+  let interval=setInterval(()=>{
+    progress+=5;
+    bar.style.width=progress+"%";
+
+    if(index<msgs.length){
+      text.innerText=msgs[index];
+      index++;
+    }
+
+    if(progress>=100){
+      clearInterval(interval);
+      showResult();
+    }
+
+  },200);
+}
+
+/* result */
+function showResult(){
+  document.getElementById("loading").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+
+  let res=document.getElementById("resText");
+
+  res.innerText="IQ: 147 🧠 (Top 1%)";
+
+  // fake leaderboard
+  document.getElementById("leaderboard").innerHTML=
+  "🏆 Leaderboard:<br>1. Alex - 152<br>2. You - 147<br>3. Elon - 140";
+
+  // prank twist
+  setTimeout(()=>{
+    res.innerText="Analyzing deeper...";
+  },1500);
+
+  setTimeout(()=>{
+    res.classList.add("glitch");
+    res.innerText="Bro really thought 💀";
+  },3000);
+
+  setTimeout(()=>{
+    res.innerText="APRIL FOOL 🤡";
+    document.body.style.background="black";
+  },4500);
+}
+
+</script>
+
+</body>
+</html>
